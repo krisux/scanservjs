@@ -1,18 +1,38 @@
-name: Docker Image CI
+name: Build and Push ScanservJS with Brother
 
 on:
   push:
-    branches: [ "main" ]
-  pull_request:
-    branches: [ "main" ]
+    branches: [ "main" ] # Buduje obraz, gdy wypchniesz zmiany do gałęzi main
+  schedule:
+    - cron: '0 0 * * 0'  # Automatyczne budowanie w każdą niedzielę o północy (pociągnie ewentualny nowy ":latest")
+
+env:
+  REGISTRY: ghcr.io
+  # GitHub automatycznie podstawi tu nazwę: "twój-login/nazwa-repozytorium"
+  IMAGE_NAME: ${{ github.repository }}
 
 jobs:
-
   build:
-
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write # Wymagane uprawnienie, by móc zapisać obraz w GitHub Packages
 
     steps:
-    - uses: actions/checkout@v4
-    - name: Build the Docker image
-      run: docker build . --file Dockerfile --tag my-image-name:$(date +%s)
+      - name: Pobranie kodu repozytorium
+        uses: actions/checkout@v4
+
+      - name: Logowanie do rejestru GitHub Packages
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }} # Automatyczny token generowany przez GitHub
+
+      - name: Budowanie i wypychanie obrazu Docker
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          push: true
+          # Nadaje obrazowi tag ":latest"
+          tags: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest
