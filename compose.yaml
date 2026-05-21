@@ -1,0 +1,18 @@
+version: '3.8'
+
+services:
+  scanservjs:
+    build: .
+    container_name: scanservjs
+    restart: unless-stopped
+    ports:
+      - "8080:8080"
+    environment:
+      # Tutaj w prosty sposób zmieniasz dane swojego skanera bez edycji Dockerfile:
+      - BR_NAME=Brother
+      - BR_MODEL=DCP-1610W
+      - BR_IP=10.44.44.19
+    volumes:
+      - /var/run/dbus:/var/run/dbus
+      # Opcjonalnie: folder na skany zapisywane na dysku serwera
+      # - ./skany:/var/lib/scanservjs/output
