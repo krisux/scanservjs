@@ -16,7 +16,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     && rm -rf /var/lib/apt/lists/*
 
 # 5. Pobieramy i instalujemy sterownik Brother brscan4
-RUN curl -L "https://download.brother.com/welcome/dlf006645/brscan4-0.4.11-1.amd64.deb" -o /tmp/brscan4.deb \
+RUN curl -L "https://download.brother.com/welcome/dlf105200/brscan4-0.4.11-1.amd64.deb" -o /tmp/brscan4.deb \
     && dpkg -i /tmp/brscan4.deb \
     && rm /tmp/brscan4.deb
 
